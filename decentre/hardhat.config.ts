@@ -1,5 +1,6 @@
 import { task } from "hardhat/config";
 import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-ethers";
 
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 const SEPOLIA_PRIVATE_KEY = process.env.SEPOLIA_PRIVATE_KEY;
