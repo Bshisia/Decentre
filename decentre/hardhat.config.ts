@@ -14,7 +14,7 @@ module.exports = {
   },
 };
 
-task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
+task("accounts", "Prints the list of accounts", async (taskArgs: any, hre: any) => {
   const accounts = await hre.ethers.getSigners();
   for (const account of accounts) {
     console.log(account.address);
