@@ -1,21 +1,27 @@
-// This file defines TypeScript types and interfaces used throughout the application for better type safety.
-
 export interface Certificate {
-    id: string;
-    owner: string;
-    issuedDate: Date;
-    validUntil: Date;
-    status: 'issued' | 'revoked';
+    studentId: string;
+    studentName: string;
+    course: string;
+    institution: string;
+    dateIssued: number;
+    isRevoked: boolean;
+    exists: boolean;
 }
 
-export interface User {
-    id: string;
-    name: string;
-    email: string;
+export interface Admin {
+    address: string;
+    isAuthorized: boolean;
 }
 
 export interface VerificationResult {
     isValid: boolean;
     certificate?: Certificate;
     message: string;
+}
+
+export interface CertificateForm {
+    studentId: string;
+    studentName: string;
+    course: string;
+    institution: string;
 }
