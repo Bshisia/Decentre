@@ -4,6 +4,7 @@ import {
     Card, CardBody, CardHeader, Heading, Text, SimpleGrid
 } from '@chakra-ui/react';
 import { certificateStore } from '../../utils/certificateStore';
+import { authStore } from '../../utils/authStore';
 
 interface CertificateForm {
     studentId: string;
@@ -37,6 +38,12 @@ const Dashboard: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
+        
+        // Check authentication
+        if (!authStore.isAuthenticated()) {
+            setMessage('Authentication required. Please login again.');
+            return;
+        }
         
         setLoading(true);
         setMessage('');
