@@ -3,32 +3,74 @@ pragma solidity ^0.8.0;
 
 contract Certificate {
     struct Cert {
-        string name;
+        string studentName;
+        string studentId;
         string course;
+        string institution;
         uint256 dateIssued;
         bool isRevoked;
+        bool exists;
     }
 
-    mapping(address => Cert) public certificates;
+    address public admin;
+    mapping(string => Cert) public certificates; // studentId => Certificate
+    mapping(address => bool) public authorizedAdmins;
 
-    event CertificateIssued(address indexed recipient, string name, string course, uint256 dateIssued);
-    event CertificateRevoked(address indexed recipient);
+    event CertificateIssued(string indexed studentId, string studentName, string course, string institution);
+    event CertificateRevoked(string indexed studentId);
+    event AdminAdded(address indexed admin);
 
-    function issueCertificate(address recipient, string memory name, string memory course) public {
-        require(certificates[recipient].dateIssued == 0, "Certificate already issued");
-        certificates[recipient] = Cert(name, course, block.timestamp, false);
-        emit CertificateIssued(recipient, name, course, block.timestamp);
+    modifier onlyAdmin() {
+        require(msg.sender == admin || authorizedAdmins[msg.sender], "Only admin can perform this action");
+        _;
     }
 
-    function verifyCertificate(address recipient) public view returns (string memory, string memory, uint256, bool) {
-        Cert memory cert = certificates[recipient];
-        require(cert.dateIssued != 0, "Certificate not found");
-        return (cert.name, cert.course, cert.dateIssued, cert.isRevoked);
+    constructor() {
+        admin = msg.sender;
     }
 
-    function revokeCertificate(address recipient) public {
-        require(certificates[recipient].dateIssued != 0, "Certificate not found");
-        certificates[recipient].isRevoked = true;
-        emit CertificateRevoked(recipient);
+    function addAdmin(address newAdmin) public {
+        require(msg.sender == admin, "Only main admin can add admins");
+        authorizedAdmins[newAdmin] = true;
+        emit AdminAdded(newAdmin);
+    }
+
+    function issueCertificate(
+        string memory studentId,
+        string memory studentName,
+        string memory course,
+        string memory institution
+    ) public onlyAdmin {
+        require(!certificates[studentId].exists, "Certificate already exists for this student ID");
+        
+        certificates[studentId] = Cert({
+            studentName: studentName,
+            studentId: studentId,
+            course: course,
+            institution: institution,
+            dateIssued: block.timestamp,
+            isRevoked: false,
+            exists: true
+        });
+        
+        emit CertificateIssued(studentId, studentName, course, institution);
+    }
+
+    function verifyCertificate(string memory studentId) public view returns (
+        string memory studentName,
+        string memory course,
+        string memory institution,
+        uint256 dateIssued,
+        bool isRevoked
+    ) {
+        Cert memory cert = certificates[studentId];
+        require(cert.exists, "Certificate not found");
+        return (cert.studentName, cert.course, cert.institution, cert.dateIssued, cert.isRevoked);
+    }
+
+    function revokeCertificate(string memory studentId) public onlyAdmin {
+        require(certificates[studentId].exists, "Certificate not found");
+        certificates[studentId].isRevoked = true;
+        emit CertificateRevoked(studentId);
     }
 }
