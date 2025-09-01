@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <Box minH="100vh" bg="linear-gradient(to bottom right, #3182ce, #805ad5)" position="relative">
       <Box position="absolute" top={0} left={0} right={0} bottom={0} bg="blackAlpha.200" />
-      <Container maxW="6xl" py={20} position="relative" zIndex={1}>
+      <Container maxW="6xl" py={10} position="relative" zIndex={1}>
         <VStack spacing={16} textAlign="center">
           {/* Hero Section */}
           <VStack spacing={8}>
