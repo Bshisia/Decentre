@@ -13,10 +13,10 @@ export const connectToBlockchain = async (): Promise<BlockchainConnection> => {
         return cachedConnection;
     }
 
-    if (typeof window.ethereum !== 'undefined') {
+    if (typeof (window as any).ethereum !== 'undefined') {
         try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const provider = new ethers.providers.Web3Provider((window as any).ethereum);
+            await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
             const signer = provider.getSigner();
             cachedConnection = { provider, signer };
             return cachedConnection;
