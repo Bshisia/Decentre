@@ -1,37 +1,90 @@
-// filepath: /decentre/decentre/src/app/pages/verify.tsx
-
 import React, { useState } from 'react';
+import { Box, Button, Input, VStack, Alert, AlertIcon, Text, Heading } from '@chakra-ui/react';
+
+interface CertificateData {
+    studentName: string;
+    course: string;
+    institution: string;
+    dateIssued: string;
+    isRevoked: boolean;
+}
 
 const Verify: React.FC = () => {
-    const [certificateId, setCertificateId] = useState('');
-    const [verificationResult, setVerificationResult] = useState<string | null>(null);
+    const [studentId, setStudentId] = useState('');
+    const [certificate, setCertificate] = useState<CertificateData | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleVerify = async () => {
-        // Logic to verify the certificate using blockchain utilities
-        // This is a placeholder for the actual verification logic
-        const result = await verifyCertificate(certificateId);
-        setVerificationResult(result ? 'Certificate is valid.' : 'Certificate is invalid.');
+        if (!studentId.trim()) {
+            setError('Please enter a student ID');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        setCertificate(null);
+
+        try {
+            // TODO: Integrate with blockchain contract
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Mock data for demonstration
+            setCertificate({
+                studentName: 'John Doe',
+                course: 'Computer Science',
+                institution: 'Tech University',
+                dateIssued: new Date().toLocaleDateString(),
+                isRevoked: false
+            });
+        } catch (err) {
+            setError('Certificate not found or verification failed');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div>
-            <h1>Verify Certificate</h1>
-            <input
-                type="text"
-                value={certificateId}
-                onChange={(e) => setCertificateId(e.target.value)}
-                placeholder="Enter Certificate ID"
-            />
-            <button onClick={handleVerify}>Verify</button>
-            {verificationResult && <p>{verificationResult}</p>}
-        </div>
+        <Box p={8}>
+            <Heading mb={6}>Verify Certificate</Heading>
+            <VStack spacing={4}>
+                <Input
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
+                    placeholder="Enter Student ID"
+                    size="lg"
+                />
+                <Button 
+                    onClick={handleVerify} 
+                    colorScheme="blue" 
+                    isLoading={loading}
+                    size="lg"
+                >
+                    Verify Certificate
+                </Button>
+                
+                {error && (
+                    <Alert status="error">
+                        <AlertIcon />
+                        {error}
+                    </Alert>
+                )}
+                
+                {certificate && (
+                    <Alert status={certificate.isRevoked ? 'warning' : 'success'}>
+                        <AlertIcon />
+                        <Box>
+                            <Text><strong>Student:</strong> {certificate.studentName}</Text>
+                            <Text><strong>Course:</strong> {certificate.course}</Text>
+                            <Text><strong>Institution:</strong> {certificate.institution}</Text>
+                            <Text><strong>Date Issued:</strong> {certificate.dateIssued}</Text>
+                            <Text><strong>Status:</strong> {certificate.isRevoked ? 'REVOKED' : 'VALID'}</Text>
+                        </Box>
+                    </Alert>
+                )}
+            </VStack>
+        </Box>
     );
 };
 
 export default Verify;
-
-// Placeholder function for certificate verification
-const verifyCertificate = async (id: string) => {
-    // Implement the actual verification logic here
-    return true; // Assume the certificate is valid for this placeholder
-};
