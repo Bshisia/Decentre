@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-    Card, CardBody, CardHeader, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, VStack, Button, HStack
+    Card, CardBody, CardHeader, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, VStack, Button, HStack, Image, Avatar
 } from '@chakra-ui/react';
 import { certificateStore } from '../../utils/certificateStore';
 import { authStore } from '../../utils/authStore';
@@ -43,6 +43,7 @@ const StudentView: React.FC = () => {
                         <Table variant="simple">
                             <Thead>
                                 <Tr>
+                                    <Th>Photo</Th>
                                     <Th>Student ID</Th>
                                     <Th>Student Name</Th>
                                     <Th>Course</Th>
@@ -53,6 +54,19 @@ const StudentView: React.FC = () => {
                             <Tbody>
                                 {students.map((student, index) => (
                                     <Tr key={index}>
+                                        <Td>
+                                            {student.photo ? (
+                                                <Image 
+                                                    src={student.photo} 
+                                                    alt={student.studentName}
+                                                    boxSize="40px" 
+                                                    objectFit="cover" 
+                                                    borderRadius="full"
+                                                />
+                                            ) : (
+                                                <Avatar size="sm" name={student.studentName} />
+                                            )}
+                                        </Td>
                                         <Td fontWeight="medium">{student.studentId}</Td>
                                         <Td>{student.studentName}</Td>
                                         <Td>{student.course}</Td>
