@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
     Box, Button, Input, VStack, Alert, AlertIcon, Text, Heading, 
     Container, Card, CardBody, CardHeader, HStack, Badge,
-    SimpleGrid, Divider
+    SimpleGrid, Divider, Image
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { certificateStore } from '../utils/certificateStore';
@@ -13,6 +13,7 @@ interface CertificateData {
     institution: string;
     dateIssued: string;
     isRevoked: boolean;
+    photo?: string;
 }
 
 const Verify: React.FC = () => {
@@ -46,7 +47,8 @@ const Verify: React.FC = () => {
                     course: foundCertificate.course,
                     institution: foundCertificate.institution,
                     dateIssued: foundCertificate.dateIssued,
-                    isRevoked: foundCertificate.isRevoked
+                    isRevoked: foundCertificate.isRevoked,
+                    photo: foundCertificate.photo
                 });
             } else {
                 setError('Certificate not found for this Student ID');
@@ -166,7 +168,32 @@ const Verify: React.FC = () => {
                                 </HStack>
                             </CardHeader>
                             <CardBody>
-                                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                                <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+                                    <VStack align="center" spacing={4}>
+                                        {certificate.photo ? (
+                                            <Image 
+                                                src={certificate.photo} 
+                                                alt={certificate.studentName}
+                                                boxSize="120px" 
+                                                objectFit="cover" 
+                                                borderRadius="md"
+                                                border="2px solid"
+                                                borderColor="gray.200"
+                                            />
+                                        ) : (
+                                            <Box 
+                                                boxSize="120px" 
+                                                bg="gray.100" 
+                                                borderRadius="md"
+                                                display="flex"
+                                                alignItems="center"
+                                                justifyContent="center"
+                                            >
+                                                <Text color="gray.500">No Photo</Text>
+                                            </Box>
+                                        )}
+                                        <Text fontSize="sm" color="gray.500">Student Photo</Text>
+                                    </VStack>
                                     <VStack align="start" spacing={4}>
                                         <Box>
                                             <Text fontSize="sm" color="gray.500" mb={1}>Student Name</Text>
