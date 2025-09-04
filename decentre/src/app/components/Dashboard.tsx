@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { 
     Box, Button, FormControl, FormLabel, Input, VStack, Alert, AlertIcon, 
-    Card, CardBody, CardHeader, Heading, Text, SimpleGrid, Tabs, TabList, TabPanels, Tab, TabPanel
+    Card, CardBody, CardHeader, Heading, Text, SimpleGrid, Tabs, TabList, TabPanels, Tab, TabPanel,
+    Image, Center
 } from '@chakra-ui/react';
 import { certificateStore } from '../../utils/certificateStore';
 import { authStore } from '../../utils/authStore';
 import AdminManagement from './AdminManagement';
 import StudentView from './StudentView';
+import UniversityManagement from './UniversityManagement';
 
 interface CertificateForm {
     studentId: string;
     studentName: string;
     course: string;
     institution: string;
+    photo?: string;
 }
 
 const Dashboard: React.FC = () => {
@@ -21,7 +24,8 @@ const Dashboard: React.FC = () => {
         studentId: '',
         studentName: '',
         course: '',
-        institution: ''
+        institution: '',
+        photo: ''
     });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
@@ -70,11 +74,12 @@ const Dashboard: React.FC = () => {
                 studentId: form.studentId,
                 studentName: form.studentName,
                 course: form.course,
-                institution: institutionName
+                institution: institutionName,
+                photo: form.photo
             });
             
             setMessage('Certificate issued successfully! 🎉');
-            setForm({ studentId: '', studentName: '', course: '', institution: '' });
+            setForm({ studentId: '', studentName: '', course: '', institution: '', photo: '' });
             setRefreshKey(prev => prev + 1); // Trigger refresh
         } catch (error) {
             setMessage('Failed to issue certificate. Please try again.');
@@ -89,16 +94,20 @@ const Dashboard: React.FC = () => {
     return (
         <Tabs variant="enclosed" colorScheme="blue">
             <TabList mb={6}>
-                <Tab>📜 Issue Certificates</Tab>
+                {!canManageAdmins && <Tab>📜 Issue Certificates</Tab>}
                 {canManageAdmins ? (
-                    <Tab>👥 Manage Admins</Tab>
+                    <>
+                        <Tab>👥 Manage Admins</Tab>
+                        <Tab>🏢 Manage Universities</Tab>
+                    </>
                 ) : (
                     <Tab>👨🎓 View Students</Tab>
                 )}
             </TabList>
             
             <TabPanels>
-                <TabPanel p={0}>
+                {!canManageAdmins && (
+                    <TabPanel p={0}>
                     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
                         {/* Issue Certificate Form */}
                         <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
@@ -165,6 +174,38 @@ const Dashboard: React.FC = () => {
                                         </FormControl>
                                     )}
 
+                                    <FormControl>
+                                        <FormLabel>📷 Passport Photo</FormLabel>
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = (event) => {
+                                                        setForm({...form, photo: event.target?.result as string});
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                            bg="white"
+                                        />
+                                        {form.photo && (
+                                            <Center mt={4}>
+                                                <Image 
+                                                    src={form.photo} 
+                                                    alt="Preview" 
+                                                    boxSize="100px" 
+                                                    objectFit="cover" 
+                                                    borderRadius="md"
+                                                    border="2px solid"
+                                                    borderColor="gray.200"
+                                                />
+                                            </Center>
+                                        )}
+                                    </FormControl>
+
                                     <Button 
                                         type="submit" 
                                         colorScheme="blue" 
@@ -224,7 +265,8 @@ const Dashboard: React.FC = () => {
                             </CardBody>
                         </Card>
                     </SimpleGrid>
-                </TabPanel>
+                    </TabPanel>
+                )}
                 
                 <TabPanel p={0}>
                     {canManageAdmins ? (
@@ -233,6 +275,12 @@ const Dashboard: React.FC = () => {
                         <StudentView key={refreshKey} />
                     )}
                 </TabPanel>
+                
+                {canManageAdmins && (
+                    <TabPanel p={0}>
+                        <UniversityManagement />
+                    </TabPanel>
+                )}
             </TabPanels>
         </Tabs>
     );
