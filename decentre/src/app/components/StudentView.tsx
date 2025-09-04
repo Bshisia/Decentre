@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-    Card, CardBody, CardHeader, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, VStack
+    Card, CardBody, CardHeader, Heading, Text, Table, Thead, Tbody, Tr, Th, Td, Badge, VStack, Button, HStack
 } from '@chakra-ui/react';
 import { certificateStore } from '../../utils/certificateStore';
 import { authStore } from '../../utils/authStore';
@@ -9,19 +9,30 @@ const StudentView: React.FC = () => {
     const [students, setStudents] = useState<any[]>([]);
     const currentAdmin = authStore.getCurrentAdmin();
 
-    useEffect(() => {
+    const refreshStudents = () => {
         if (currentAdmin?.institution) {
             const institutionStudents = certificateStore.getByInstitution(currentAdmin.institution);
             setStudents(institutionStudents);
         }
+    };
+
+    useEffect(() => {
+        refreshStudents();
     }, [currentAdmin]);
 
     return (
         <VStack spacing={6} align="stretch">
             <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
                 <CardHeader>
-                    <Heading size="lg" color="blue.600">Students from {currentAdmin?.institution}</Heading>
-                    <Text color="gray.600" mt={2} fontSize="md">View all students with certificates from your institution</Text>
+                    <HStack justify="space-between" align="center">
+                        <VStack align="start" spacing={1}>
+                            <Heading size="lg" color="blue.600">Students from {currentAdmin?.institution}</Heading>
+                            <Text color="gray.600" fontSize="md">View all students with certificates from your institution</Text>
+                        </VStack>
+                        <Button onClick={refreshStudents} colorScheme="blue" size="sm">
+                            🔄 Refresh
+                        </Button>
+                    </HStack>
                 </CardHeader>
                 <CardBody>
                     {students.length === 0 ? (
