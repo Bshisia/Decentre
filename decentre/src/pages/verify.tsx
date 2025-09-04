@@ -4,8 +4,8 @@ import {
     Container, Card, CardBody, CardHeader, HStack, Badge,
     SimpleGrid, Divider, Image
 } from '@chakra-ui/react';
-import Link from 'next/link';
 import { certificateStore } from '../utils/certificateStore';
+import Navbar from '../app/components/Navbar';
 
 interface CertificateData {
     studentName: string;
@@ -67,28 +67,8 @@ const Verify: React.FC = () => {
     };
 
     return (
-        <Box minH="100vh" bg="linear-gradient(to bottom right, #38a169, #2b77cb)">
-            {/* Header */}
-            <Box bg="whiteAlpha.100" backdropFilter="blur(10px)" borderBottom="1px" borderColor="whiteAlpha.200">
-                <Container maxW="6xl" py={6}>
-                    <HStack justify="space-between">
-                        <HStack spacing={4}>
-                            <Text fontSize="3xl">🔍</Text>
-                            <Heading size="xl" color="white">Certificate Verification</Heading>
-                        </HStack>
-                        <Link href="/">
-                            <Button 
-                                bg="whiteAlpha.200" 
-                                color="white" 
-                                _hover={{ bg: "whiteAlpha.300" }}
-                                backdropFilter="blur(10px)"
-                            >
-                                ← Back to Home
-                            </Button>
-                        </Link>
-                    </HStack>
-                </Container>
-            </Box>
+        <Box minH="100vh" bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+            <Navbar title="Certificate Verification" icon="🔍" showLogin />
 
             <Container maxW="4xl" py={8}>
                 <VStack spacing={8}>
