@@ -19,6 +19,7 @@ interface CertificateData {
 const Verify: React.FC = () => {
     const [studentId, setStudentId] = useState('');
     const [certificate, setCertificate] = useState<CertificateData | null>(null);
+    const [fullCertificate, setFullCertificate] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [searched, setSearched] = useState(false);
@@ -50,6 +51,7 @@ const Verify: React.FC = () => {
                     isRevoked: foundCertificate.isRevoked,
                     photo: foundCertificate.photo
                 });
+                setFullCertificate(foundCertificate);
             } else {
                 setError('Certificate not found for this Student ID');
             }
@@ -206,6 +208,37 @@ const Verify: React.FC = () => {
                                     <Text fontSize="sm" color="gray.500" mb={1}>Course/Program</Text>
                                     <Text fontSize="xl" fontWeight="bold" color="blue.600">{certificate.course}</Text>
                                 </Box>
+                                
+                                {/* Certificate File Display */}
+                                {fullCertificate?.certificateFile && (
+                                    <Box mt={6}>
+                                        <Divider my={4} />
+                                        <Text fontSize="sm" color="gray.500" mb={3}>Certificate Document</Text>
+                                        {fullCertificate.certificateFile.type.startsWith('image/') ? (
+                                            <Box textAlign="center">
+                                                <img 
+                                                    src={fullCertificate.certificateFile.data} 
+                                                    alt="Certificate" 
+                                                    style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px', border: '2px solid #e2e8f0' }}
+                                                />
+                                            </Box>
+                                        ) : (
+                                            <Box p={4} bg="gray.50" borderRadius="md" textAlign="center">
+                                                <Text fontSize="2xl" mb={2}>📄</Text>
+                                                <Text fontWeight="bold" mb={2}>{fullCertificate.certificateFile.name}</Text>
+                                                <Button 
+                                                    as="a" 
+                                                    href={fullCertificate.certificateFile.data} 
+                                                    download={fullCertificate.certificateFile.name}
+                                                    colorScheme="blue" 
+                                                    size="sm"
+                                                >
+                                                    📎 Download PDF
+                                                </Button>
+                                            </Box>
+                                        )}
+                                    </Box>
+                                )}
                             </CardBody>
                         </Card>
                     )}
