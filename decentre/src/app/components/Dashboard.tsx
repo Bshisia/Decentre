@@ -16,6 +16,7 @@ interface CertificateForm {
 }
 
 const Dashboard: React.FC = () => {
+    const [refreshKey, setRefreshKey] = useState(0);
     const [form, setForm] = useState<CertificateForm>({
         studentId: '',
         studentName: '',
@@ -31,7 +32,7 @@ const Dashboard: React.FC = () => {
         if (!form.studentId.trim()) newErrors.studentId = 'Student ID is required';
         if (!form.studentName.trim()) newErrors.studentName = 'Student name is required';
         if (!form.course.trim()) newErrors.course = 'Course is required';
-        if (!form.institution.trim()) newErrors.institution = 'Institution is required';
+        if (!currentAdmin?.institution && !form.institution.trim()) newErrors.institution = 'Institution is required';
         
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -61,16 +62,20 @@ const Dashboard: React.FC = () => {
             // Simulate processing time
             await new Promise(resolve => setTimeout(resolve, 1000));
             
+            // Get institution name from current user or form
+            const institutionName = currentAdmin?.institution || form.institution;
+            
             // Issue certificate
             certificateStore.issue({
                 studentId: form.studentId,
                 studentName: form.studentName,
                 course: form.course,
-                institution: form.institution
+                institution: institutionName
             });
             
             setMessage('Certificate issued successfully! 🎉');
             setForm({ studentId: '', studentName: '', course: '', institution: '' });
+            setRefreshKey(prev => prev + 1); // Trigger refresh
         } catch (error) {
             setMessage('Failed to issue certificate. Please try again.');
         } finally {
@@ -136,16 +141,29 @@ const Dashboard: React.FC = () => {
                                         {errors.course && <Text color="red.500" fontSize="sm">{errors.course}</Text>}
                                     </FormControl>
 
-                                    <FormControl isRequired isInvalid={!!errors.institution}>
-                                        <FormLabel>🏢 Institution</FormLabel>
-                                        <Input
-                                            value={form.institution}
-                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, institution: e.target.value})}
-                                            placeholder="e.g., Tech University"
-                                            bg="white"
-                                        />
-                                        {errors.institution && <Text color="red.500" fontSize="sm">{errors.institution}</Text>}
-                                    </FormControl>
+                                    {!currentAdmin?.institution && (
+                                        <FormControl isRequired isInvalid={!!errors.institution}>
+                                            <FormLabel>🏢 Institution</FormLabel>
+                                            <Input
+                                                value={form.institution}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, institution: e.target.value})}
+                                                placeholder="e.g., Tech University"
+                                                bg="white"
+                                            />
+                                            {errors.institution && <Text color="red.500" fontSize="sm">{errors.institution}</Text>}
+                                        </FormControl>
+                                    )}
+                                    {currentAdmin?.institution && (
+                                        <FormControl>
+                                            <FormLabel>🏢 Institution</FormLabel>
+                                            <Input
+                                                value={currentAdmin.institution}
+                                                isReadOnly
+                                                bg="gray.100"
+                                                color="gray.600"
+                                            />
+                                        </FormControl>
+                                    )}
 
                                     <Button 
                                         type="submit" 
@@ -212,7 +230,7 @@ const Dashboard: React.FC = () => {
                     {canManageAdmins ? (
                         <AdminManagement />
                     ) : (
-                        <StudentView />
+                        <StudentView key={refreshKey} />
                     )}
                 </TabPanel>
             </TabPanels>
