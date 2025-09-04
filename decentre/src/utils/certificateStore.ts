@@ -41,5 +41,10 @@ export const certificateStore = {
   // Get all certificates (for admin view)
   getAll: (): Certificate[] => {
     return Array.from(certificates.values());
+  },
+
+  // Get certificates by institution (for university view)
+  getByInstitution: (institution: string): Certificate[] => {
+    return Array.from(certificates.values()).filter(cert => cert.institution === institution);
   }
 };
