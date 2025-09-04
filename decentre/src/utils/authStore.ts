@@ -52,6 +52,19 @@ export const authStore = {
     return true;
   },
 
+  // Add new university (only for admin role)
+  addUniversity: (username: string, password: string, institution: string): boolean => {
+    if (!currentAdmin || currentAdmin.role !== 'admin') return false;
+    
+    // Check if username already exists
+    if (admins.find(a => a.username === username)) {
+      return false;
+    }
+    
+    admins.push({ username, password, role: 'university', institution });
+    return true;
+  },
+
   // Check if current user can manage admins
   canManageAdmins: (): boolean => {
     return currentAdmin?.role === 'admin';
@@ -60,5 +73,10 @@ export const authStore = {
   // Get all admins (for display purposes)
   getAllAdmins: (): Admin[] => {
     return admins.map(admin => ({ ...admin, password: '***' }));
+  },
+
+  // Get all universities
+  getAllUniversities: (): Admin[] => {
+    return admins.filter(admin => admin.role === 'university').map(admin => ({ ...admin, password: '***' }));
   }
 };
