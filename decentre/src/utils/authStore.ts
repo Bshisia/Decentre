@@ -1,13 +1,14 @@
 interface Admin {
   username: string;
   password: string;
-  role: 'admin';
+  role: 'admin' | 'university';
+  institution?: string;
 }
 
 // Simple admin credentials (in production, use hashed passwords)
 const admins: Admin[] = [
   { username: 'admin', password: 'admin123', role: 'admin' },
-  { username: 'university', password: 'uni2024', role: 'admin' }
+  { username: 'university', password: 'uni2024', role: 'university', institution: 'Tech University' }
 ];
 
 let currentAdmin: Admin | null = null;
@@ -36,5 +37,28 @@ export const authStore = {
   // Get current admin
   getCurrentAdmin: (): Admin | null => {
     return currentAdmin;
+  },
+
+  // Add new admin (only for admin role, not university)
+  addAdmin: (username: string, password: string): boolean => {
+    if (!currentAdmin || currentAdmin.role !== 'admin') return false;
+    
+    // Check if username already exists
+    if (admins.find(a => a.username === username)) {
+      return false;
+    }
+    
+    admins.push({ username, password, role: 'admin' });
+    return true;
+  },
+
+  // Check if current user can manage admins
+  canManageAdmins: (): boolean => {
+    return currentAdmin?.role === 'admin';
+  },
+
+  // Get all admins (for display purposes)
+  getAllAdmins: (): Admin[] => {
+    return admins.map(admin => ({ ...admin, password: '***' }));
   }
 };
