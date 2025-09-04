@@ -7,8 +7,28 @@ interface Certificate {
   isRevoked: boolean;
 }
 
-// Simple in-memory storage for testing
-const certificates: Map<string, Certificate> = new Map();
+// Storage with localStorage persistence
+const STORAGE_KEY = 'decentre_certificates';
+
+const loadCertificates = (): Map<string, Certificate> => {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const data = JSON.parse(stored);
+      return new Map(Object.entries(data));
+    }
+  }
+  return new Map();
+};
+
+const saveCertificates = (certificates: Map<string, Certificate>) => {
+  if (typeof window !== 'undefined') {
+    const data = Object.fromEntries(certificates);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+};
+
+const certificates: Map<string, Certificate> = loadCertificates();
 
 export const certificateStore = {
   // Issue a new certificate
@@ -19,6 +39,7 @@ export const certificateStore = {
       isRevoked: false
     };
     certificates.set(certificate.studentId, newCert);
+    saveCertificates(certificates);
     return newCert;
   },
 
@@ -33,6 +54,7 @@ export const certificateStore = {
     if (cert) {
       cert.isRevoked = true;
       certificates.set(studentId, cert);
+      saveCertificates(certificates);
       return true;
     }
     return false;
