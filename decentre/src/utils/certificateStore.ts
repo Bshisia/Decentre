@@ -5,6 +5,7 @@ interface Certificate {
   institution: string;
   dateIssued: string;
   isRevoked: boolean;
+  photo?: string;
 }
 
 // Storage with localStorage persistence
