@@ -16,6 +16,7 @@ interface CertificateForm {
     course: string;
     institution: string;
     photo?: string;
+    certificateFile?: File;
 }
 
 const Dashboard: React.FC = () => {
@@ -27,6 +28,7 @@ const Dashboard: React.FC = () => {
         institution: '',
         photo: ''
     });
+    const [filePreview, setFilePreview] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [errors, setErrors] = useState<Partial<CertificateForm>>({});
@@ -69,17 +71,37 @@ const Dashboard: React.FC = () => {
             // Get institution name from current user or form
             const institutionName = currentAdmin?.institution || form.institution;
             
-            // Issue certificate
-            certificateStore.issue({
+            // Prepare certificate data with file
+            let certificateData: any = {
                 studentId: form.studentId,
                 studentName: form.studentName,
                 course: form.course,
                 institution: institutionName,
                 photo: form.photo
-            });
+            };
+
+            // Add file data if present
+            if (form.certificateFile) {
+                const fileData = await new Promise<string>((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target?.result as string);
+                    reader.readAsDataURL(form.certificateFile!);
+                });
+
+                certificateData.certificateFile = {
+                    name: form.certificateFile.name,
+                    type: form.certificateFile.type,
+                    data: fileData,
+                    size: form.certificateFile.size
+                };
+            }
+            
+            // Issue certificate
+            certificateStore.issue(certificateData);
             
             setMessage('Certificate issued successfully! 🎉');
             setForm({ studentId: '', studentName: '', course: '', institution: '', photo: '' });
+            setFilePreview('');
             setRefreshKey(prev => prev + 1); // Trigger refresh
         } catch (error) {
             setMessage('Failed to issue certificate. Please try again.');
@@ -175,7 +197,7 @@ const Dashboard: React.FC = () => {
                                     )}
 
                                     <FormControl>
-                                        <FormLabel>📷 Passport Photo</FormLabel>
+                                        <FormLabel>📷 Student Passport Photo</FormLabel>
                                         <Input
                                             type="file"
                                             accept="image/*"
@@ -195,9 +217,55 @@ const Dashboard: React.FC = () => {
                                             <Center mt={4}>
                                                 <Image 
                                                     src={form.photo} 
-                                                    alt="Preview" 
+                                                    alt="Student Photo" 
                                                     boxSize="100px" 
                                                     objectFit="cover" 
+                                                    borderRadius="md"
+                                                    border="2px solid"
+                                                    borderColor="gray.200"
+                                                />
+                                            </Center>
+                                        )}
+                                    </FormControl>
+
+                                    <FormControl>
+                                        <FormLabel>📄 Certificate File (PDF/Image)</FormLabel>
+                                        <Input
+                                            type="file"
+                                            accept=".pdf,.jpg,.jpeg,.png"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setForm({...form, certificateFile: file});
+                                                    
+                                                    // Create preview for images
+                                                    if (file.type.startsWith('image/')) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = (event) => {
+                                                            setFilePreview(event.target?.result as string);
+                                                        };
+                                                        reader.readAsDataURL(file);
+                                                    } else {
+                                                        setFilePreview('');
+                                                    }
+                                                }
+                                            }}
+                                            bg="white"
+                                        />
+                                        {form.certificateFile && (
+                                            <Box mt={3} p={3} bg="gray.50" borderRadius="md">
+                                                <Text fontSize="sm" color="gray.600">
+                                                    📁 {form.certificateFile.name} ({(form.certificateFile.size / 1024).toFixed(1)} KB)
+                                                </Text>
+                                            </Box>
+                                        )}
+                                        {filePreview && (
+                                            <Center mt={4}>
+                                                <Image 
+                                                    src={filePreview} 
+                                                    alt="Preview" 
+                                                    maxH="200px" 
+                                                    objectFit="contain" 
                                                     borderRadius="md"
                                                     border="2px solid"
                                                     borderColor="gray.200"

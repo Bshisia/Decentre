@@ -6,6 +6,12 @@ interface Certificate {
   dateIssued: string;
   isRevoked: boolean;
   photo?: string;
+  certificateFile?: {
+    name: string;
+    type: string;
+    data: string; // base64 encoded file data
+    size: number;
+  };
 }
 
 // Storage with localStorage persistence
