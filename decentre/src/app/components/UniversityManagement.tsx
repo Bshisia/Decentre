@@ -37,7 +37,7 @@ const UniversityManagement: React.FC = () => {
             const success = authStore.addUniversity(form.username, form.password, form.institution);
             
             if (success) {
-                setMessage('University added successfully! 🎉');
+                setMessage('University added successfully!');
                 setForm({ username: '', password: '', institution: '' });
                 setUniversities(authStore.getAllUniversities());
             } else {
@@ -53,59 +53,74 @@ const UniversityManagement: React.FC = () => {
     return (
         <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
             {/* Add University Form */}
-            <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
+            <Card bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl" _hover={{ transform: 'translateY(-5px)', borderColor: 'rgba(0, 212, 255, 0.3)' }} transition="all 0.3s ease">
                 <CardHeader>
-                    <Heading size="lg" color="green.600">Add New University</Heading>
-                    <Text color="gray.600" mt={2} fontSize="md">Create a new university account</Text>
+                    <Heading size="lg" color="#00d4ff">Add New University</Heading>
+                    <Text color="whiteAlpha.800" mt={2} fontSize="md">Create a new university account</Text>
                 </CardHeader>
                 <CardBody>
                     <VStack spacing={6} as="form" onSubmit={handleSubmit}>
                         <FormControl isRequired>
-                            <FormLabel>👤 Username</FormLabel>
+                            <FormLabel color="white">👤 Username</FormLabel>
                             <Input
                                 value={form.username}
                                 onChange={(e) => setForm({...form, username: e.target.value})}
                                 placeholder="Enter university username"
-                                bg="white"
+                                bg="rgba(255, 255, 255, 0.1)"
+                                border="2px solid rgba(0, 212, 255, 0.2)"
+                                color="white"
+                                _placeholder={{ color: 'whiteAlpha.600' }}
+                                _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                             />
                         </FormControl>
 
                         <FormControl isRequired>
-                            <FormLabel>🔒 Password</FormLabel>
+                            <FormLabel color="white">🔒 Password</FormLabel>
                             <Input
                                 type="password"
                                 value={form.password}
                                 onChange={(e) => setForm({...form, password: e.target.value})}
                                 placeholder="Enter secure password (min 6 chars)"
-                                bg="white"
+                                bg="rgba(255, 255, 255, 0.1)"
+                                border="2px solid rgba(0, 212, 255, 0.2)"
+                                color="white"
+                                _placeholder={{ color: 'whiteAlpha.600' }}
+                                _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                             />
                         </FormControl>
 
                         <FormControl isRequired>
-                            <FormLabel>🏢 Institution Name</FormLabel>
+                            <FormLabel color="white">🏢 Institution Name</FormLabel>
                             <Input
                                 value={form.institution}
                                 onChange={(e) => setForm({...form, institution: e.target.value})}
                                 placeholder="Enter institution name"
-                                bg="white"
+                                bg="rgba(255, 255, 255, 0.1)"
+                                border="2px solid rgba(0, 212, 255, 0.2)"
+                                color="white"
+                                _placeholder={{ color: 'whiteAlpha.600' }}
+                                _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                             />
                         </FormControl>
 
                         <Button 
                             type="submit" 
-                            colorScheme="green" 
+                            bg="linear-gradient(135deg, #00d4ff, #0099cc)"
+                            color="white"
                             size="lg"
                             w="full"
+                            borderRadius="50px"
                             isLoading={loading}
                             loadingText="Adding University..."
+                            _hover={{ transform: 'translateY(-2px)', boxShadow: '0 10px 25px rgba(0, 212, 255, 0.3)' }}
                         >
                             Add University
                         </Button>
 
                         {message && (
-                            <Alert status={message.includes('success') ? 'success' : 'error'} borderRadius="md">
-                                <AlertIcon />
-                                {message}
+                            <Alert status={message.includes('success') ? 'success' : 'error'} borderRadius="xl" bg={message.includes('success') ? 'rgba(72, 187, 120, 0.1)' : 'rgba(255, 71, 87, 0.1)'} border="1px solid" borderColor={message.includes('success') ? 'rgba(72, 187, 120, 0.3)' : 'rgba(255, 71, 87, 0.3)'}>
+                                <AlertIcon color={message.includes('success') ? '#48bb78' : '#ff4757'} />
+                                <Text color={message.includes('success') ? '#48bb78' : '#ff4757'}>{message}</Text>
                             </Alert>
                         )}
                     </VStack>
@@ -113,32 +128,32 @@ const UniversityManagement: React.FC = () => {
             </Card>
 
             {/* Universities List */}
-            <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
+            <Card bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl" _hover={{ transform: 'translateY(-5px)', borderColor: 'rgba(0, 212, 255, 0.3)' }} transition="all 0.3s ease">
                 <CardHeader>
-                    <Heading size="lg" color="blue.600">Universities</Heading>
-                    <Text color="gray.600" mt={2} fontSize="md">List of all university accounts</Text>
+                    <Heading size="lg" color="#00d4ff">Universities</Heading>
+                    <Text color="whiteAlpha.800" mt={2} fontSize="md">List of all university accounts</Text>
                 </CardHeader>
                 <CardBody>
                     {universities.length === 0 ? (
-                        <Text color="gray.500" textAlign="center" py={8}>
+                        <Text color="whiteAlpha.600" textAlign="center" py={8}>
                             No universities added yet.
                         </Text>
                     ) : (
                         <Table variant="simple">
                             <Thead>
                                 <Tr>
-                                    <Th>Username</Th>
-                                    <Th>Institution</Th>
-                                    <Th>Status</Th>
+                                    <Th color="whiteAlpha.800" borderColor="rgba(0, 212, 255, 0.2)">Username</Th>
+                                    <Th color="whiteAlpha.800" borderColor="rgba(0, 212, 255, 0.2)">Institution</Th>
+                                    <Th color="whiteAlpha.800" borderColor="rgba(0, 212, 255, 0.2)">Status</Th>
                                 </Tr>
                             </Thead>
                             <Tbody>
                                 {universities.map((university, index) => (
                                     <Tr key={index}>
-                                        <Td fontWeight="medium">{university.username}</Td>
-                                        <Td>{university.institution}</Td>
-                                        <Td>
-                                            <Text color="green.600" fontWeight="medium">Active</Text>
+                                        <Td fontWeight="medium" color="white" borderColor="rgba(0, 212, 255, 0.1)">{university.username}</Td>
+                                        <Td color="whiteAlpha.800" borderColor="rgba(0, 212, 255, 0.1)">{university.institution}</Td>
+                                        <Td borderColor="rgba(0, 212, 255, 0.1)">
+                                            <Text color="#48bb78" fontWeight="medium">Active</Text>
                                         </Td>
                                     </Tr>
                                 ))}

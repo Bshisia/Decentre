@@ -37,7 +37,7 @@ const Navbar: React.FC<NavbarProps> = ({ title, icon, showAuth = false, showHome
                 _hover={{ bg: "red.600" }}
                 size="sm"
               >
-                🚪 Logout
+               Logout
               </Button>
             )}
             {!showAuth && showLogin && (
