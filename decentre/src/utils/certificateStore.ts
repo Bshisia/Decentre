@@ -32,6 +32,13 @@ const saveCertificates = (certificates: Map<string, Certificate>) => {
   if (typeof window !== 'undefined') {
     const data = Object.fromEntries(certificates);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    
+    // Also save to file via API
+    fetch('/api/certificates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).catch(err => console.log('File save failed:', err));
   }
 };
 
