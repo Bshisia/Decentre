@@ -36,7 +36,7 @@ const AdminManagement: React.FC = () => {
             const success = authStore.addAdmin(form.username, form.password);
             
             if (success) {
-                setMessage('Admin added successfully! 🎉');
+                setMessage('Admin added successfully!');
                 setForm({ username: '', password: '' });
                 setAdmins(authStore.getAllAdmins());
             } else {
@@ -52,49 +52,60 @@ const AdminManagement: React.FC = () => {
     return (
         <VStack spacing={8} align="stretch">
             {/* Add Admin Form */}
-            <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
+            <Card bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl" _hover={{ transform: 'translateY(-5px)', borderColor: 'rgba(0, 212, 255, 0.3)' }} transition="all 0.3s ease">
                 <CardHeader>
-                    <Heading size="lg" color="purple.600">Add New Admin</Heading>
-                    <Text color="gray.600" mt={2} fontSize="md">Create a new admin account</Text>
+                    <Heading size="lg" color="#00d4ff">Add New Admin</Heading>
+                    <Text color="whiteAlpha.800" mt={2} fontSize="md">Create a new admin account</Text>
                 </CardHeader>
                 <CardBody>
                     <VStack spacing={6} as="form" onSubmit={handleSubmit}>
                         <FormControl isRequired>
-                            <FormLabel>👤 Username</FormLabel>
+                            <FormLabel color="white">👤 Username</FormLabel>
                             <Input
                                 value={form.username}
                                 onChange={(e) => setForm({...form, username: e.target.value})}
                                 placeholder="Enter admin username"
-                                bg="white"
+                                bg="rgba(255, 255, 255, 0.1)"
+                                border="2px solid rgba(0, 212, 255, 0.2)"
+                                color="white"
+                                _placeholder={{ color: 'whiteAlpha.600' }}
+                                _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                             />
                         </FormControl>
 
                         <FormControl isRequired>
-                            <FormLabel>🔒 Password</FormLabel>
+                            <FormLabel color="white">🔒 Password</FormLabel>
                             <Input
                                 type="password"
                                 value={form.password}
                                 onChange={(e) => setForm({...form, password: e.target.value})}
                                 placeholder="Enter secure password (min 6 chars)"
-                                bg="white"
+                                bg="rgba(255, 255, 255, 0.1)"
+                                border="2px solid rgba(0, 212, 255, 0.2)"
+                                color="white"
+                                _placeholder={{ color: 'whiteAlpha.600' }}
+                                _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                             />
                         </FormControl>
 
                         <Button 
                             type="submit" 
-                            colorScheme="purple" 
+                            bg="linear-gradient(135deg, #00d4ff, #0099cc)"
+                            color="white"
                             size="lg"
                             w="full"
+                            borderRadius="50px"
                             isLoading={loading}
                             loadingText="Adding Admin..."
+                            _hover={{ transform: 'translateY(-2px)', boxShadow: '0 10px 25px rgba(0, 212, 255, 0.3)' }}
                         >
                             Add Admin
                         </Button>
 
                         {message && (
-                            <Alert status={message.includes('success') ? 'success' : 'error'} borderRadius="md">
-                                <AlertIcon />
-                                {message}
+                            <Alert status={message.includes('success') ? 'success' : 'error'} borderRadius="xl" bg={message.includes('success') ? 'rgba(72, 187, 120, 0.1)' : 'rgba(255, 71, 87, 0.1)'} border="1px solid" borderColor={message.includes('success') ? 'rgba(72, 187, 120, 0.3)' : 'rgba(255, 71, 87, 0.3)'}>
+                                <AlertIcon color={message.includes('success') ? '#48bb78' : '#ff4757'} />
+                                <Text color={message.includes('success') ? '#48bb78' : '#ff4757'}>{message}</Text>
                             </Alert>
                         )}
                     </VStack>
@@ -102,29 +113,29 @@ const AdminManagement: React.FC = () => {
             </Card>
 
             {/* Current Admins List */}
-            <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
+            <Card bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl" _hover={{ transform: 'translateY(-5px)', borderColor: 'rgba(0, 212, 255, 0.3)' }} transition="all 0.3s ease">
                 <CardHeader>
-                    <Heading size="lg" color="blue.600">Current Admins</Heading>
-                    <Text color="gray.600" mt={2} fontSize="md">List of all admin accounts</Text>
+                    <Heading size="lg" color="#00d4ff">Current Admins</Heading>
+                    <Text color="whiteAlpha.800" mt={2} fontSize="md">List of all admin accounts</Text>
                 </CardHeader>
                 <CardBody>
                     <Table variant="simple">
                         <Thead>
                             <Tr>
-                                <Th>Username</Th>
-                                <Th>Role</Th>
-                                <Th>Status</Th>
+                                <Th color="whiteAlpha.800" borderColor="rgba(0, 212, 255, 0.2)">Username</Th>
+                                <Th color="whiteAlpha.800" borderColor="rgba(0, 212, 255, 0.2)">Role</Th>
+                                <Th color="whiteAlpha.800" borderColor="rgba(0, 212, 255, 0.2)">Status</Th>
                             </Tr>
                         </Thead>
                         <Tbody>
                             {admins.map((admin, index) => (
                                 <Tr key={index}>
-                                    <Td fontWeight="medium">{admin.username}</Td>
-                                    <Td>
-                                        <Text color="blue.600" fontWeight="medium">Admin</Text>
+                                    <Td fontWeight="medium" color="white" borderColor="rgba(0, 212, 255, 0.1)">{admin.username}</Td>
+                                    <Td borderColor="rgba(0, 212, 255, 0.1)">
+                                        <Text color="#00d4ff" fontWeight="medium">Admin</Text>
                                     </Td>
-                                    <Td>
-                                        <Text color="green.600" fontWeight="medium">Active</Text>
+                                    <Td borderColor="rgba(0, 212, 255, 0.1)">
+                                        <Text color="#48bb78" fontWeight="medium">Active</Text>
                                     </Td>
                                 </Tr>
                             ))}
