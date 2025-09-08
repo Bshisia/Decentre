@@ -9,6 +9,8 @@ import { authStore } from '../../utils/authStore';
 import AdminManagement from './AdminManagement';
 import StudentView from './StudentView';
 import UniversityManagement from './UniversityManagement';
+import PasswordChange from './PasswordChange';
+
 
 interface CertificateForm {
     studentId: string;
@@ -99,7 +101,7 @@ const Dashboard: React.FC = () => {
             // Issue certificate
             certificateStore.issue(certificateData);
             
-            setMessage('Certificate issued successfully! 🎉');
+            setMessage('Certificate issued successfully!');
             setForm({ studentId: '', studentName: '', course: '', institution: '', photo: '' });
             setFilePreview('');
             setRefreshKey(prev => prev + 1); // Trigger refresh
@@ -114,17 +116,44 @@ const Dashboard: React.FC = () => {
     const canManageAdmins = authStore.canManageAdmins();
 
     return (
-        <Tabs variant="enclosed" colorScheme="blue">
-            <TabList mb={6}>
-                {!canManageAdmins && <Tab>📜 Issue Certificates</Tab>}
+        <Box position="relative">
+            {/* Animated Background Particles */}
+            <Box position="absolute" inset={0} pointerEvents="none" zIndex={0}>
+                {[...Array(15)].map((_, i) => (
+                    <Box
+                        key={i}
+                        position="absolute"
+                        w="2px"
+                        h="2px"
+                        bg="#00d4ff"
+                        borderRadius="50%"
+                        opacity={0.3}
+                        left={`${Math.random() * 100}%`}
+                        top={`${Math.random() * 100}%`}
+                        animation={`float ${4 + Math.random() * 2}s ease-in-out infinite`}
+                        sx={{
+                            '@keyframes float': {
+                                '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                                '50%': { transform: 'translateY(-15px) rotate(180deg)' }
+                            }
+                        }}
+                    />
+                ))}
+            </Box>
+            
+        <Tabs variant="enclosed" colorScheme="blue" position="relative" zIndex={1}>
+            <TabList mb={6} bg="rgba(255, 255, 255, 0.05)" borderRadius="xl" p={2} border="1px solid rgba(0, 212, 255, 0.1)">
+                {!canManageAdmins && <Tab color="white" _selected={{ color: '#00d4ff', bg: 'rgba(0, 212, 255, 0.1)', borderColor: '#00d4ff' }} borderRadius="lg">📜 Issue Certificates</Tab>}
                 {canManageAdmins ? (
                     <>
-                        <Tab>👥 Manage Admins</Tab>
-                        <Tab>🏢 Manage Universities</Tab>
+                        <Tab color="white" _selected={{ color: '#00d4ff', bg: 'rgba(0, 212, 255, 0.1)', borderColor: '#00d4ff' }} borderRadius="lg">👥 Manage Admins</Tab>
+                        <Tab color="white" _selected={{ color: '#00d4ff', bg: 'rgba(0, 212, 255, 0.1)', borderColor: '#00d4ff' }} borderRadius="lg">🏢 Manage Universities</Tab>
                     </>
                 ) : (
-                    <Tab>👨🎓 View Students</Tab>
+                    <Tab color="white" _selected={{ color: '#00d4ff', bg: 'rgba(0, 212, 255, 0.1)', borderColor: '#00d4ff' }} borderRadius="lg">👨🎓 View Students</Tab>
                 )}
+                <Tab color="white" _selected={{ color: '#00d4ff', bg: 'rgba(0, 212, 255, 0.1)', borderColor: '#00d4ff' }} borderRadius="lg">🔑 Change Password</Tab>
+
             </TabList>
             
             <TabPanels>
@@ -132,42 +161,54 @@ const Dashboard: React.FC = () => {
                     <TabPanel p={0}>
                     <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
                         {/* Issue Certificate Form */}
-                        <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
+                        <Card bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl" _hover={{ transform: 'translateY(-5px)', borderColor: 'rgba(0, 212, 255, 0.3)' }} transition="all 0.3s ease">
                             <CardHeader>
-                                <Heading size="lg" color="blue.600">Issue New Certificate</Heading>
-                                <Text color="gray.600" mt={2} fontSize="md">Fill in the student details to create a new certificate</Text>
+                                <Heading size="lg" color="#00d4ff">Issue New Certificate</Heading>
+                                <Text color="whiteAlpha.800" mt={2} fontSize="md">Fill in the student details to create a new certificate</Text>
                             </CardHeader>
                             <CardBody>
                                 <VStack spacing={6} as="form" onSubmit={handleSubmit}>
                                     <FormControl isRequired isInvalid={!!errors.studentId}>
-                                        <FormLabel>🎫 Student ID</FormLabel>
+                                        <FormLabel color="white">🎫 Student ID</FormLabel>
                                         <Input
                                             value={form.studentId}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, studentId: e.target.value})}
                                             placeholder="e.g., STU2024001"
-                                            bg="white"
+                                            bg="rgba(255, 255, 255, 0.1)"
+                                            border="2px solid rgba(0, 212, 255, 0.2)"
+                                            color="white"
+                                            _placeholder={{ color: 'whiteAlpha.600' }}
+                                            _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                                         />
                                         {errors.studentId && <Text color="red.500" fontSize="sm">{errors.studentId}</Text>}
                                     </FormControl>
 
                                     <FormControl isRequired isInvalid={!!errors.studentName}>
-                                        <FormLabel>👨🎓 Student Name</FormLabel>
+                                        <FormLabel color="white">👨🎓 Student Name</FormLabel>
                                         <Input
                                             value={form.studentName}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, studentName: e.target.value})}
                                             placeholder="e.g., John Doe"
-                                            bg="white"
+                                            bg="rgba(255, 255, 255, 0.1)"
+                                            border="2px solid rgba(0, 212, 255, 0.2)"
+                                            color="white"
+                                            _placeholder={{ color: 'whiteAlpha.600' }}
+                                            _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                                         />
                                         {errors.studentName && <Text color="red.500" fontSize="sm">{errors.studentName}</Text>}
                                     </FormControl>
 
                                     <FormControl isRequired isInvalid={!!errors.course}>
-                                        <FormLabel>🎓 Course/Program</FormLabel>
+                                        <FormLabel color="white">🎓 Course/Program</FormLabel>
                                         <Input
                                             value={form.course}
                                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, course: e.target.value})}
                                             placeholder="e.g., Bachelor of Computer Science"
-                                            bg="white"
+                                            bg="rgba(255, 255, 255, 0.1)"
+                                            border="2px solid rgba(0, 212, 255, 0.2)"
+                                            color="white"
+                                            _placeholder={{ color: 'whiteAlpha.600' }}
+                                            _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                                         />
                                         {errors.course && <Text color="red.500" fontSize="sm">{errors.course}</Text>}
                                     </FormControl>
@@ -179,7 +220,11 @@ const Dashboard: React.FC = () => {
                                                 value={form.institution}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({...form, institution: e.target.value})}
                                                 placeholder="e.g., Tech University"
-                                                bg="white"
+                                                bg="rgba(255, 255, 255, 0.1)"
+                                                border="2px solid rgba(0, 212, 255, 0.2)"
+                                                color="white"
+                                                _placeholder={{ color: 'whiteAlpha.600' }}
+                                                _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                                             />
                                             {errors.institution && <Text color="red.500" fontSize="sm">{errors.institution}</Text>}
                                         </FormControl>
@@ -197,7 +242,7 @@ const Dashboard: React.FC = () => {
                                     )}
 
                                     <FormControl>
-                                        <FormLabel>📷 Student Passport Photo</FormLabel>
+                                        <FormLabel color="white">📷 Student Passport Photo</FormLabel>
                                         <Input
                                             type="file"
                                             accept="image/*"
@@ -211,7 +256,10 @@ const Dashboard: React.FC = () => {
                                                     reader.readAsDataURL(file);
                                                 }
                                             }}
-                                            bg="white"
+                                            bg="rgba(255, 255, 255, 0.1)"
+                                            border="2px solid rgba(0, 212, 255, 0.2)"
+                                            color="white"
+                                            _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                                         />
                                         {form.photo && (
                                             <Center mt={4}>
@@ -229,7 +277,7 @@ const Dashboard: React.FC = () => {
                                     </FormControl>
 
                                     <FormControl>
-                                        <FormLabel>📄 Certificate File (PDF/Image)</FormLabel>
+                                        <FormLabel color="white">📄 Certificate File (PDF/Image)</FormLabel>
                                         <Input
                                             type="file"
                                             accept=".pdf,.jpg,.jpeg,.png"
@@ -250,7 +298,10 @@ const Dashboard: React.FC = () => {
                                                     }
                                                 }
                                             }}
-                                            bg="white"
+                                            bg="rgba(255, 255, 255, 0.1)"
+                                            border="2px solid rgba(0, 212, 255, 0.2)"
+                                            color="white"
+                                            _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                                         />
                                         {form.certificateFile && (
                                             <Box mt={3} p={3} bg="gray.50" borderRadius="md">
@@ -276,11 +327,14 @@ const Dashboard: React.FC = () => {
 
                                     <Button 
                                         type="submit" 
-                                        colorScheme="blue" 
+                                        bg="linear-gradient(135deg, #00d4ff, #0099cc)"
+                                        color="white"
                                         size="lg"
                                         w="full"
+                                        borderRadius="50px"
                                         isLoading={loading}
                                         loadingText="Issuing Certificate..."
+                                        _hover={{ transform: 'translateY(-2px)', boxShadow: '0 10px 25px rgba(0, 212, 255, 0.3)' }}
                                     >
                                         Issue Certificate
                                     </Button>
@@ -296,9 +350,9 @@ const Dashboard: React.FC = () => {
                         </Card>
 
                         {/* Instructions */}
-                        <Card bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
+                        <Card bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl" _hover={{ transform: 'translateY(-5px)', borderColor: 'rgba(0, 212, 255, 0.3)' }} transition="all 0.3s ease">
                             <CardHeader>
-                                <Heading size="lg" color="green.600">Instructions</Heading>
+                                <Heading size="lg" color="#00d4ff">Instructions</Heading>
                             </CardHeader>
                             <CardBody>
                                 <VStack spacing={4} align="start">
@@ -349,8 +403,14 @@ const Dashboard: React.FC = () => {
                         <UniversityManagement />
                     </TabPanel>
                 )}
+                
+                <TabPanel p={0}>
+                    <PasswordChange />
+                </TabPanel>
+
             </TabPanels>
         </Tabs>
+        </Box>
     );
 };
 
