@@ -69,7 +69,7 @@ const Verify: React.FC = () => {
     };
 
     return (
-        <Box minH="100vh" bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+        <Box minH="100vh" bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)" position="relative" overflow="hidden">
             <Navbar title="Certificate Verification" icon="🔍" showLogin />
 
             <Container maxW="4xl" py={8}>

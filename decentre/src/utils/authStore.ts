@@ -78,5 +78,22 @@ export const authStore = {
   // Get all universities
   getAllUniversities: (): Admin[] => {
     return admins.filter(admin => admin.role === 'university').map(admin => ({ ...admin, password: '***' }));
+  },
+
+  // Change password for current user
+  changePassword: (currentPassword: string, newPassword: string): boolean => {
+    if (!currentAdmin) return false;
+    
+    // Verify current password
+    if (currentAdmin.password !== currentPassword) return false;
+    
+    // Update password
+    const adminIndex = admins.findIndex(a => a.username === currentAdmin.username);
+    if (adminIndex !== -1) {
+      admins[adminIndex].password = newPassword;
+      currentAdmin.password = newPassword;
+      return true;
+    }
+    return false;
   }
 };
