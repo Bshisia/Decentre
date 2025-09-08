@@ -1,24 +1,19 @@
 import React, { useState } from 'react';
 import { 
-    Box, Button, FormControl, FormLabel, Input, VStack, Alert, AlertIcon, 
-    Card, CardBody, CardHeader, Heading, Text, Container, HStack, SimpleGrid
+    Box, Button, FormControl, FormLabel, Input, VStack, HStack, Alert, AlertIcon, 
+    Card, CardBody, CardHeader, Heading, Text, Container
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { authStore } from '../utils/authStore';
-import Navbar from '../app/components/Navbar';
 
-export default function Login() {
-    const [selectedRole, setSelectedRole] = useState<'admin' | 'university' | null>(null);
+export default function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [role, setRole] = useState<'admin' | 'university'>('admin');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-
-    const handleRoleSelect = (role: 'admin' | 'university') => {
-        setSelectedRole(role);
-        setError('');
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,173 +23,178 @@ export default function Login() {
         await new Promise(resolve => setTimeout(resolve, 800));
 
         if (authStore.login(username, password)) {
-            router.push('/admin');
+            const currentAdmin = authStore.getCurrentAdmin();
+            if (currentAdmin?.role === role) {
+                router.push('/dashboard');
+            } else {
+                authStore.logout();
+                setError(`Invalid credentials for ${role} role`);
+            }
         } else {
             setError('Invalid username or password');
         }
         setLoading(false);
     };
 
-    const handleBack = () => {
-        setSelectedRole(null);
-        setUsername('');
-        setPassword('');
-        setError('');
-    };
-
     return (
-        <Box minH="100vh" bg="linear-gradient(135deg, #667eea 0%, #764ba2 100%)" position="relative">
-            <Box position="absolute" top={0} left={0} right={0} bottom={0} bg="blackAlpha.400" />
-            <Box position="relative" zIndex={1}>
-                <Navbar title="Login" icon="🔐" showLogin={false} />
-                <Container maxW="md" py={20} display="flex" alignItems="center" justifyContent="center" minH="80vh">
-                    {!selectedRole ? (
-                        <Card w="full" bg="whiteAlpha.950" backdropFilter="blur(20px)" border="2px solid" borderColor="whiteAlpha.400" shadow="2xl" borderRadius="2xl">
-                            <CardHeader textAlign="center" pb={2}>
-                                <Box 
-                                    bg="blue.500" 
-                                    borderRadius="full" 
-                                    p={4} 
-                                    display="inline-block"
-                                    mb={4}
-                                    shadow="lg"
-                                >
-                                    <Text fontSize="3xl" color="white">👥</Text>
-                                </Box>
-                                <Heading size="xl" color="gray.800" mb={2}>Choose Login Type</Heading>
-                                <Text color="gray.600" fontSize="lg">Select your role to continue</Text>
-                            </CardHeader>
-                            <CardBody pt={4}>
-                                <SimpleGrid columns={1} spacing={4}>
-                                    <Button
-                                        size="lg"
-                                        py={8}
-                                        bg="purple.500"
-                                        color="white"
-                                        _hover={{ bg: "purple.600", transform: "translateY(-2px)" }}
-                                        onClick={() => handleRoleSelect('admin')}
-                                        borderRadius="xl"
-                                        leftIcon={<Text fontSize="2xl">👨💼</Text>}
-                                    >
-                                        <VStack spacing={1}>
-                                            <Text fontSize="lg" fontWeight="bold">System Administrator</Text>
-                                            <Text fontSize="sm" opacity={0.8}>Manage admins and universities</Text>
-                                        </VStack>
-                                    </Button>
-                                    <Button
-                                        size="lg"
-                                        py={8}
-                                        bg="green.500"
-                                        color="white"
-                                        _hover={{ bg: "green.600", transform: "translateY(-2px)" }}
-                                        onClick={() => handleRoleSelect('university')}
-                                        borderRadius="xl"
-                                        leftIcon={<Text fontSize="2xl">🏫</Text>}
-                                    >
-                                        <VStack spacing={1}>
-                                            <Text fontSize="lg" fontWeight="bold">University</Text>
-                                            <Text fontSize="sm" opacity={0.8}>Issue certificates and view students</Text>
-                                        </VStack>
-                                    </Button>
-                                </SimpleGrid>
-                            </CardBody>
-                        </Card>
-                    ) : (
-                        <Card w="full" bg="whiteAlpha.950" backdropFilter="blur(20px)" border="2px solid" borderColor="whiteAlpha.400" shadow="2xl" borderRadius="2xl">
-                            <CardHeader textAlign="center" pb={2}>
-                                <HStack justify="space-between" align="center" mb={4}>
-                                    <Button size="sm" variant="ghost" onClick={handleBack}>← Back</Button>
-                                    <Box />
-                                </HStack>
-                                <Box 
-                                    bg={selectedRole === 'admin' ? 'purple.500' : 'green.500'}
-                                    borderRadius="full" 
-                                    p={4} 
-                                    display="inline-block"
-                                    mb={4}
-                                    shadow="lg"
-                                >
-                                    <Text fontSize="3xl" color="white">
-                                        {selectedRole === 'admin' ? '👨💼' : '🏫'}
-                                    </Text>
-                                </Box>
-                                <Heading size="xl" color="gray.800" mb={2}>
-                                    {selectedRole === 'admin' ? 'Admin Login' : 'University Login'}
-                                </Heading>
-                                <Text color="gray.600" fontSize="lg">
-                                    {selectedRole === 'admin' ? 'System Administrator Access' : 'University Portal Access'}
-                                </Text>
-                            </CardHeader>
-                            <CardBody pt={4}>
-                                <VStack spacing={6} as="form" onSubmit={handleSubmit}>
-                                    <FormControl isRequired>
-                                        <FormLabel color="gray.700" fontWeight="semibold">Username</FormLabel>
-                                        <Input
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
-                                            placeholder="Enter your username"
-                                            bg="white"
-                                            border="2px solid"
-                                            borderColor="gray.200"
-                                            _focus={{ borderColor: selectedRole === 'admin' ? 'purple.500' : 'green.500' }}
-                                            size="lg"
-                                            borderRadius="xl"
-                                        />
-                                    </FormControl>
-
-                                    <FormControl isRequired>
-                                        <FormLabel color="gray.700" fontWeight="semibold">Password</FormLabel>
-                                        <Input
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            placeholder="Enter your password"
-                                            bg="white"
-                                            border="2px solid"
-                                            borderColor="gray.200"
-                                            _focus={{ borderColor: selectedRole === 'admin' ? 'purple.500' : 'green.500' }}
-                                            size="lg"
-                                            borderRadius="xl"
-                                        />
-                                    </FormControl>
-
-                                    <Button 
-                                        type="submit" 
-                                        colorScheme={selectedRole === 'admin' ? 'purple' : 'green'}
-                                        size="lg"
-                                        w="full"
-                                        isLoading={loading}
-                                        loadingText="Signing in..."
-                                        borderRadius="xl"
-                                        py={6}
-                                        fontSize="lg"
-                                        _hover={{ transform: "translateY(-2px)", shadow: "xl" }}
-                                        transition="all 0.3s"
-                                    >
-                                        Sign In
-                                    </Button>
-
-                                    {error && (
-                                        <Alert status="error" borderRadius="xl" bg="red.50" border="1px solid" borderColor="red.200">
-                                            <AlertIcon />
-                                            <Text color="red.700">{error}</Text>
-                                        </Alert>
-                                    )}
-
-                                    <Box p={6} bg={selectedRole === 'admin' ? 'purple.50' : 'green.50'} borderRadius="xl" w="full" border="1px solid" borderColor={selectedRole === 'admin' ? 'purple.200' : 'green.200'}>
-                                        <Text fontSize="sm" color={selectedRole === 'admin' ? 'purple.800' : 'green.800'} fontWeight="bold" mb={3} textAlign="center">Demo Credentials</Text>
-                                        <Box textAlign="center">
-                                            <Text fontSize="sm" color={selectedRole === 'admin' ? 'purple.700' : 'green.700'} fontWeight="semibold">
-                                                {selectedRole === 'admin' ? 'Admin: admin / admin123' : 'University: university / uni2024'}
-                                            </Text>
-                                        </Box>
-                                    </Box>
-                                </VStack>
-                            </CardBody>
-                        </Card>
-                    )}
-                </Container>
+        <Box minH="100vh" bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)" position="relative" overflow="hidden">
+            {/* Home Button */}
+            <Box position="absolute" top={4} left={4} zIndex={10}>
+                <Link href="/">
+                    <Button bg="transparent" border="2px solid #00d4ff" color="#00d4ff" _hover={{ bg: '#00d4ff', color: '#0f0f23' }} borderRadius="50px" px={6}>
+                        🏠 Home
+                    </Button>
+                </Link>
             </Box>
+            {/* Animated Background Particles */}
+            <Box position="absolute" inset={0} pointerEvents="none">
+                {[...Array(20)].map((_, i) => (
+                    <Box
+                        key={i}
+                        position="absolute"
+                        w="2px"
+                        h="2px"
+                        bg="#00d4ff"
+                        borderRadius="50%"
+                        opacity={0.6}
+                        left={`${Math.random() * 100}%`}
+                        top={`${Math.random() * 100}%`}
+                        animation={`float ${3 + Math.random() * 3}s ease-in-out infinite`}
+                        sx={{
+                            '@keyframes float': {
+                                '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                                '50%': { transform: 'translateY(-20px) rotate(180deg)' }
+                            }
+                        }}
+                    />
+                ))}
+            </Box>
+
+            <Container maxW="md" py={20} position="relative" zIndex={1} display="flex" alignItems="center" justifyContent="center" minH="100vh">
+                <Card w="full" bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl">
+                    <CardHeader textAlign="center" pb={2}>
+                        <Box 
+                            bg="linear-gradient(135deg, #00d4ff, #0099cc)" 
+                            borderRadius="full" 
+                            p={4} 
+                            display="inline-block"
+                            mb={4}
+                            shadow="lg"
+                        >
+                            <Text fontSize="3xl" color="white"></Text>
+                        </Box>
+                        <Heading size="xl" color="#00d4ff" mb={2}>Welcome Back</Heading>
+                        <Text color="whiteAlpha.800" fontSize="lg">Sign in to access your dashboard</Text>
+                    </CardHeader>
+                    <CardBody pt={4}>
+                        <VStack spacing={6} as="form" onSubmit={handleSubmit}>
+                            {/* Role Selection */}
+                            <FormControl>
+                                <FormLabel color="white" fontWeight="semibold">Login As</FormLabel>
+                                <HStack spacing={4} w="full">
+                                    <Button
+                                        flex={1}
+                                        bg={role === 'admin' ? 'linear-gradient(135deg, #00d4ff, #0099cc)' : 'transparent'}
+                                        border={role === 'admin' ? 'none' : '2px solid rgba(0, 212, 255, 0.3)'}
+                                        color={role === 'admin' ? 'white' : '#00d4ff'}
+                                        onClick={() => setRole('admin')}
+                                        borderRadius="xl"
+                                        _hover={{ transform: 'translateY(-1px)' }}
+                                    >
+                                        💼 Admin
+                                    </Button>
+                                    <Button
+                                        flex={1}
+                                        bg={role === 'university' ? 'linear-gradient(135deg, #00d4ff, #0099cc)' : 'transparent'}
+                                        border={role === 'university' ? 'none' : '2px solid rgba(0, 212, 255, 0.3)'}
+                                        color={role === 'university' ? 'white' : '#00d4ff'}
+                                        onClick={() => setRole('university')}
+                                        borderRadius="xl"
+                                        _hover={{ transform: 'translateY(-1px)' }}
+                                    >
+                                        🏫 University
+                                    </Button>
+                                </HStack>
+                            </FormControl>
+                            <FormControl isRequired>
+                                <FormLabel color="white" fontWeight="semibold">Username</FormLabel>
+                                <Input
+                                    value={username}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+                                    placeholder="Enter your username"
+                                    bg="rgba(255, 255, 255, 0.1)"
+                                    border="2px solid rgba(0, 212, 255, 0.2)"
+                                    color="white"
+                                    _placeholder={{ color: 'whiteAlpha.600' }}
+                                    _focus={{ borderColor: "#00d4ff", shadow: "0 0 0 1px #00d4ff" }}
+                                    size="lg"
+                                    borderRadius="xl"
+                                />
+                            </FormControl>
+
+                            <FormControl isRequired>
+                                <FormLabel color="white" fontWeight="semibold">Password</FormLabel>
+                                <Input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                                    placeholder="Enter your password"
+                                    bg="rgba(255, 255, 255, 0.1)"
+                                    border="2px solid rgba(0, 212, 255, 0.2)"
+                                    color="white"
+                                    _placeholder={{ color: 'whiteAlpha.600' }}
+                                    _focus={{ borderColor: "#00d4ff", shadow: "0 0 0 1px #00d4ff" }}
+                                    size="lg"
+                                    borderRadius="xl"
+                                />
+                            </FormControl>
+
+                            <Button 
+                                type="submit" 
+                                bg="linear-gradient(135deg, #00d4ff, #0099cc)"
+                                color="white"
+                                size="lg"
+                                w="full"
+                                borderRadius="50px"
+                                isLoading={loading}
+                                loadingText="Signing in..."
+                                py={6}
+                                fontSize="lg"
+                                _hover={{ transform: "translateY(-2px)", boxShadow: "0 10px 25px rgba(0, 212, 255, 0.3)" }}
+                                transition="all 0.3s"
+                            >
+                                Sign In
+                            </Button>
+
+                            {error && (
+                                <Alert status="error" borderRadius="xl" bg="rgba(255, 71, 87, 0.1)" border="1px solid rgba(255, 71, 87, 0.3)">
+                                    <AlertIcon color="#ff4757" />
+                                    <Text color="#ff4757">{error}</Text>
+                                </Alert>
+                            )}
+
+                            <Box p={6} bg="rgba(0, 212, 255, 0.1)" borderRadius="xl" w="full" border="1px solid rgba(0, 212, 255, 0.2)">
+                                <Text fontSize="sm" color="#00d4ff" fontWeight="bold" mb={3} textAlign="center">
+                                    {role === 'admin' ? 'Admin' : 'University'} Demo Credentials
+                                </Text>
+                                <Box textAlign="center">
+                                    {role === 'admin' ? (
+                                        <>
+                                            <Text fontSize="sm" color="whiteAlpha.900" fontWeight="semibold">Admin Access</Text>
+                                            <Text fontSize="sm" color="whiteAlpha.700">admin / admin123</Text>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Text fontSize="sm" color="whiteAlpha.900" fontWeight="semibold">University Access</Text>
+                                            <Text fontSize="sm" color="whiteAlpha.700">university / uni2024</Text>
+                                        </>
+                                    )}
+                                </Box>
+                            </Box>
+                        </VStack>
+                    </CardBody>
+                </Card>
+            </Container>
         </Box>
     );
 }
