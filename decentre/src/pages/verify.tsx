@@ -70,16 +70,39 @@ const Verify: React.FC = () => {
 
     return (
         <Box minH="100vh" bg="linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)" position="relative" overflow="hidden">
+            {/* Animated Background Particles */}
+            <Box position="absolute" inset={0} pointerEvents="none">
+                {[...Array(25)].map((_, i) => (
+                    <Box
+                        key={i}
+                        position="absolute"
+                        w="2px"
+                        h="2px"
+                        bg="#00d4ff"
+                        borderRadius="50%"
+                        opacity={0.4}
+                        left={`${Math.random() * 100}%`}
+                        top={`${Math.random() * 100}%`}
+                        animation={`float ${3 + Math.random() * 3}s ease-in-out infinite`}
+                        sx={{
+                            '@keyframes float': {
+                                '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                                '50%': { transform: 'translateY(-20px) rotate(180deg)' }
+                            }
+                        }}
+                    />
+                ))}
+            </Box>
             <Navbar title="Certificate Verification" icon="🔍" showLogin />
 
             <Container maxW="4xl" py={8}>
                 <VStack spacing={8}>
                     {/* Search Section */}
-                    <Card w="full" bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="2xl">
+                    <Card w="full" bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="2xl" _hover={{ transform: 'translateY(-5px)', borderColor: 'rgba(0, 212, 255, 0.3)' }} transition="all 0.3s ease">
                         <CardHeader textAlign="center">
                             <Text fontSize="6xl" mb={4}>🎓</Text>
-                            <Heading size="xl" color="gray.800" mb={2}>Verify Student Certificate</Heading>
-                            <Text color="gray.600" fontSize="lg">Enter the student ID to verify their certificate authenticity</Text>
+                            <Heading size="xl" color="#00d4ff" mb={2}>Verify Student Certificate</Heading>
+                            <Text color="whiteAlpha.800" fontSize="lg">Enter the student ID to verify their certificate authenticity</Text>
                         </CardHeader>
                         <CardBody>
                             <VStack spacing={6}>
@@ -88,19 +111,24 @@ const Verify: React.FC = () => {
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStudentId(e.target.value)}
                                     onKeyPress={handleKeyPress}
                                     placeholder="Enter Student ID"
-                                    bg="white"
-                                    borderColor="gray.300"
-                                    _focus={{ borderColor: 'green.500', boxShadow: '0 0 0 1px #38A169' }}
+                                    bg="rgba(255, 255, 255, 0.1)"
+                                    border="2px solid rgba(0, 212, 255, 0.2)"
+                                    color="white"
+                                    _placeholder={{ color: 'whiteAlpha.600' }}
+                                    _focus={{ borderColor: '#00d4ff', shadow: '0 0 0 1px #00d4ff' }}
                                     size="lg"
                                     maxW="md"
                                 />
                                 <Button 
                                     onClick={handleVerify} 
-                                    colorScheme="green" 
+                                    bg="linear-gradient(135deg, #00d4ff, #0099cc)"
+                                    color="white"
                                     size="lg"
+                                    borderRadius="50px"
                                     isLoading={loading}
                                     loadingText="Verifying..."
                                     px={8}
+                                    _hover={{ transform: 'translateY(-2px)', boxShadow: '0 10px 25px rgba(0, 212, 255, 0.3)' }}
                                 >
                                     🔍 Verify Certificate
                                 </Button>
@@ -123,19 +151,20 @@ const Verify: React.FC = () => {
                     {certificate && (
                         <Card 
                             w="full" 
-                            bg="whiteAlpha.950" 
+                            bg="rgba(255, 255, 255, 0.05)" 
                             backdropFilter="blur(10px)" 
                             border="2px solid" 
-                            borderColor={certificate.isRevoked ? 'red.300' : 'green.300'}
+                            borderColor={certificate.isRevoked ? 'rgba(255, 71, 87, 0.5)' : 'rgba(0, 212, 255, 0.5)'}
+                            borderRadius="20px"
                             shadow="2xl"
                         >
-                            <CardHeader bg={certificate.isRevoked ? 'red.100' : 'green.100'} borderTopRadius="md">
+                            <CardHeader bg={certificate.isRevoked ? 'rgba(255, 71, 87, 0.1)' : 'rgba(0, 212, 255, 0.1)'} borderTopRadius="20px">
                                 <HStack justify="space-between" align="center">
                                     <HStack>
                                         <Text fontSize="2xl">
                                             {certificate.isRevoked ? '❌' : '✅'}
                                         </Text>
-                                        <Heading size="md" color={certificate.isRevoked ? 'red.700' : 'green.700'}>
+                                        <Heading size="md" color={certificate.isRevoked ? '#ff4757' : '#00d4ff'}>
                                             Certificate {certificate.isRevoked ? 'Revoked' : 'Verified'}
                                         </Heading>
                                     </HStack>
@@ -178,42 +207,42 @@ const Verify: React.FC = () => {
                                     </VStack>
                                     <VStack align="start" spacing={4}>
                                         <Box>
-                                            <Text fontSize="sm" color="gray.500" mb={1}>Student Name</Text>
-                                            <Text fontSize="lg" fontWeight="bold">{certificate.studentName}</Text>
+                                            <Text fontSize="sm" color="whiteAlpha.600" mb={1}>Student Name</Text>
+                                            <Text fontSize="lg" fontWeight="bold" color="white">{certificate.studentName}</Text>
                                         </Box>
                                         <Box>
-                                            <Text fontSize="sm" color="gray.500" mb={1}>Student ID</Text>
-                                            <Text fontSize="lg" fontWeight="bold">{studentId}</Text>
+                                            <Text fontSize="sm" color="whiteAlpha.600" mb={1}>Student ID</Text>
+                                            <Text fontSize="lg" fontWeight="bold" color="white">{studentId}</Text>
                                         </Box>
                                     </VStack>
                                     <VStack align="start" spacing={4}>
                                         <Box>
                                             <HStack mb={1}>
                                                 <Text>🏢</Text>
-                                                <Text fontSize="sm" color="gray.500">Institution</Text>
+                                                <Text fontSize="sm" color="whiteAlpha.600">Institution</Text>
                                             </HStack>
-                                            <Text fontSize="lg" fontWeight="bold">{certificate.institution}</Text>
+                                            <Text fontSize="lg" fontWeight="bold" color="white">{certificate.institution}</Text>
                                         </Box>
                                         <Box>
                                             <HStack mb={1}>
                                                 <Text>📅</Text>
-                                                <Text fontSize="sm" color="gray.500">Date Issued</Text>
+                                                <Text fontSize="sm" color="whiteAlpha.600">Date Issued</Text>
                                             </HStack>
-                                            <Text fontSize="lg" fontWeight="bold">{certificate.dateIssued}</Text>
+                                            <Text fontSize="lg" fontWeight="bold" color="white">{certificate.dateIssued}</Text>
                                         </Box>
                                     </VStack>
                                 </SimpleGrid>
                                 <Divider my={4} />
                                 <Box>
-                                    <Text fontSize="sm" color="gray.500" mb={1}>Course/Program</Text>
-                                    <Text fontSize="xl" fontWeight="bold" color="blue.600">{certificate.course}</Text>
+                                    <Text fontSize="sm" color="whiteAlpha.600" mb={1}>Course/Program</Text>
+                                    <Text fontSize="xl" fontWeight="bold" color="#00d4ff">{certificate.course}</Text>
                                 </Box>
                                 
                                 {/* Certificate File Display */}
                                 {fullCertificate?.certificateFile && (
                                     <Box mt={6}>
                                         <Divider my={4} />
-                                        <Text fontSize="sm" color="gray.500" mb={3}>Certificate Document</Text>
+                                        <Text fontSize="sm" color="whiteAlpha.600" mb={3}>Certificate Document</Text>
                                         {fullCertificate.certificateFile.type.startsWith('image/') ? (
                                             <Box textAlign="center">
                                                 <img 
@@ -245,25 +274,25 @@ const Verify: React.FC = () => {
 
                     {/* Instructions */}
                     {!searched && (
-                        <Card w="full" bg="whiteAlpha.900" backdropFilter="blur(10px)" border="1px solid" borderColor="whiteAlpha.300" shadow="xl">
+                        <Card w="full" bg="rgba(255, 255, 255, 0.05)" backdropFilter="blur(10px)" border="1px solid rgba(0, 212, 255, 0.1)" borderRadius="20px" shadow="xl">
                             <CardBody>
                                 <VStack spacing={4}>
-                                    <Heading size="md" color="gray.700">How to Verify</Heading>
+                                    <Heading size="md" color="#00d4ff">How to Verify</Heading>
                                     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={4} w="full">
                                         <Box textAlign="center" p={4}>
                                             <Text fontSize="3xl" mb={2}>🎫</Text>
                                             <Text fontWeight="bold" mb={1}>1. Enter Student ID</Text>
-                                            <Text fontSize="sm" color="gray.600">Input the unique student identifier</Text>
+                                            <Text fontSize="sm" color="whiteAlpha.700">Input the unique student identifier</Text>
                                         </Box>
                                         <Box textAlign="center" p={4}>
                                             <Text fontSize="3xl" mb={2}>🔍</Text>
                                             <Text fontWeight="bold" mb={1}>2. Click Verify</Text>
-                                            <Text fontSize="sm" color="gray.600">Search blockchain for certificate</Text>
+                                            <Text fontSize="sm" color="whiteAlpha.700">Search blockchain for certificate</Text>
                                         </Box>
                                         <Box textAlign="center" p={4}>
                                             <Text fontSize="3xl" mb={2}>🎓</Text>
                                             <Text fontWeight="bold" mb={1}>3. View Results</Text>
-                                            <Text fontSize="sm" color="gray.600">See certificate details instantly</Text>
+                                            <Text fontSize="sm" color="whiteAlpha.700">See certificate details instantly</Text>
                                         </Box>
                                     </SimpleGrid>
                                 </VStack>
